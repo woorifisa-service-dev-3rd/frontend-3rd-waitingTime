@@ -12,7 +12,7 @@ export const call_waiting_api = async bankName => {
                 console.error(`HTTP error! Status: ${response.status}`);
                 return;
             }
-
+            
             const data = await response.json();
 
             if (data.tncd === '404') {
