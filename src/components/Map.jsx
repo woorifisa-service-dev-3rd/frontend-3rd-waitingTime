@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function Map(allBankList, search_bank) {
+function Map({ allBankList, search_bank }) {
     const [map, setMap] = useState(null);
     const [locPosition , setLocPosition] = useState(null);
     const [locPositionList , setLocPositionList] = useState(null);

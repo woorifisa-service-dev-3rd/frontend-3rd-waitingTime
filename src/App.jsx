@@ -17,7 +17,7 @@ function App() {
             console.log(typeof api_data_sample)
 
             const _IBKbanklist = Object.values(api_data_sample);
-            console.log(_IBKbanklist)
+            console.log(Array.isArray(_IBKbanklist));
 
             // const IBKbanklist = await call_waiting_api('IBK');
             setAllBankList(_IBKbanklist);
