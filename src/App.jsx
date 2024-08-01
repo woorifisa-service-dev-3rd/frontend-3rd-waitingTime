@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Map from './components/Map';
 import { call_waiting_api } from './utils/Bank_API';
 import { api_data_sample } from '../constant';
-import MapComponent from './components/MapComponent';
+// import MapComponent from './components/MapComponent';
 
 function App() {
 
