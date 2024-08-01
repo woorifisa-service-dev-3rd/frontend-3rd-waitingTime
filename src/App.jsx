@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { MainContext } from './contexts/PageContexts';
 
 function App() {
-  const isLargeScreen = useMediaQuery({ query: '(min-width: 700px)' });
+  const isLargeScreen = useMediaQuery({ query: '(min-width: 800px)' });
   const [clickedButtonName, setClickedButtonName] = useState('기업은행');
 
   return (

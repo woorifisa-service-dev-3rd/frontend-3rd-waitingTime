@@ -1,7 +1,8 @@
 import React, { useContext, useState } from 'react'
 
 import { CiSearch } from "react-icons/ci";
-import { MainContext } from '../contexts/PageContexts';
+import { MainContext, MapExContext } from '../contexts/PageContexts';
+import MapEx from './MapEx';
 
 const MainPage = () => {
     const {clickedButtonName,setClickedButtonName}=useContext(MainContext);
@@ -32,7 +33,7 @@ const MainPage = () => {
     return (
         <>
             
-            <div className="Nonscroll bg-white border-2 border-gray-300 max-w-sm overflow-y-auto overflow-hidden p-4 rounded-lg shadow-md">
+            <div className="Nonscroll bg-white border-2 border-gray-300 w-[50rem] max-w-lg overflow-y-auto overflow-hidden p-4 rounded-lg shadow-md">
                 <div className='flex'>
                 <select name="" id="" className=" p-3 bg-blue-100 text-blue-700 rounded-lg shadow-md text-center font-semibold w-60 mx-auto" value={clickedButtonName} onChange={handleChange}> 
                     <option value="우리은행">우리은행</option>
@@ -66,7 +67,11 @@ const MainPage = () => {
 
                 {/* 지도 이미지 들어갈 예정 */}
                 <div className='flex justify-center items-center mb-10'>
-                    <img src='/src/assets/Samsungwallpaper.jpg' alt='' className='h-56 w-56 object-cover rounded-lg shadow-md' />
+                <MapExContext.Provider value={{inputText, setInputText}}>
+                    <MapEx className='w-[70%] h-[70%]' />
+                </MapExContext.Provider>
+                
+                
                 </div>
 
                 {/* 지도 들어갈 예정 */}
