@@ -37,6 +37,8 @@ export const call_waiting_api = async bankName => {
                 const all = {
                     brncNwBscAdr: call_data.brncNwBscAdr,
                     brncNwDtlAdr: call_data.brncNwDtlAdr,
+                    brncGuBscAdr: call_data.brncGuBscAdr,
+                    brncGuDtlAdr: call_data.brncGuDtlAdr,
                     krnBrm: call_data.krnBrm,
                     brcd: data.brcd,
                     tlwnList: data.tlwnList,
