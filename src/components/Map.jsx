@@ -6,19 +6,19 @@ function Map({ allBankList, search_bank }) {
     const [locPositionList , setLocPositionList] = useState(null);
     const [bankList, setBankList] = useState([]);
     const [markers, setMarkers] = useState([]);
-
+    
     useEffect(() => {
         const mapScript = document.createElement('script');
         mapScript.async = true;
         mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&autoload=false&libraries=services`;
         document.head.appendChild(mapScript);
-
+        
         const onLoadKakaoMap = () => {
             window.kakao.maps.load(() => {
                 const mapContainer = document.getElementById('map');
                 const mapOption = {
-                center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-                level: 3, // 지도의 확대 레벨
+                    center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                    level: 3, // 지도의 확대 레벨
                 };
                 const kakaoMap = new window.kakao.maps.Map(mapContainer, mapOption);
                 setMap(kakaoMap);
@@ -28,7 +28,7 @@ function Map({ allBankList, search_bank }) {
         mapScript.addEventListener('load', onLoadKakaoMap);
         
     }, []);
-
+    
     useEffect(() => {
         if (locPosition && map){
             displayMarker(locPosition, '<div style="text-align:center;padding:5px;">현위치</div>');
@@ -44,6 +44,32 @@ function Map({ allBankList, search_bank }) {
             map.setBounds(bounds);
         }
     }, [locPosition, locPositionList, map])
+
+    
+    // 현위치 주소정보 받아오는 함수
+    const nowAddress = (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+            
+            console.log(result[0].region_2depth_name);
+            const res = allBankList.filter((data) => {
+                if(data.brncNwBscAdr.includes(result[0].region_2depth_name) || data.brncNwDtlAdr.includes(result[0].region_2depth_name) || data.krnBrm.includes(result[0].region_2depth_name)) {
+                    return data
+                }});
+            console.log(res);
+        }    
+    }
+    
+    // 좌표로 행정동 주소 정보를 요청합니다
+    const searchAddrFromCoords = (coords, callback) => {
+        let geocoder = new kakao.maps.services.Geocoder();
+        geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
+    }
+    
+    // // 좌표로 법정동 상세 주소 정보를 요청합니다
+    // function searchDetailAddrFromCoords(coords, callback) {
+    //     let geocoder = new kakao.maps.services.Geocoder();
+    //     geocoder.coord2Address(coords.getLng(), coords.getLat(), callback);
+    // }
 
     // 검색 결과 받기
     // 영업점 목록에 대해 마커 생성 + 인포 윈도우 표시
@@ -69,7 +95,7 @@ function Map({ allBankList, search_bank }) {
 
         let temp = [];
         let promises = [];
-
+    
         bankList.forEach(branch => {
             let promise = new Promise((resolve, reject) => {
                 geocoder.addressSearch(branch.address, function(result, status) {
@@ -88,7 +114,7 @@ function Map({ allBankList, search_bank }) {
             });
             promises.push(promise);
         });
-
+        
         Promise.all(promises)
             .then(() => {
                 setLocPositionList(temp);
@@ -97,17 +123,19 @@ function Map({ allBankList, search_bank }) {
             .catch(error => {
                 console.error('Error occurred while fetching coordinates:', error);
             });
-    }
-
+        }
+        
     const handleCurrLoc = () => {
         setLocPositionList(null);
-
+        
         if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) { 
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            const currentLoc = new window.kakao.maps.LatLng(lat, lon);
-            setLocPosition(currentLoc);
+            navigator.geolocation.getCurrentPosition(function(position) { 
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const currentLoc = new window.kakao.maps.LatLng(lat, lon);
+                setLocPosition(currentLoc);
+                searchAddrFromCoords(currentLoc, nowAddress);
+                // searchDetailAddrFromCoords(currentLoc, nowAddress);
             });
         } else { 
         const defaultLoc = new window.kakao.maps.LatLng(33.450701, 126.570667);
