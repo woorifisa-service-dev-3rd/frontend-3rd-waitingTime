@@ -3,28 +3,8 @@ import { useEffect, useState } from 'react';
 function Map() {
     const [map, setMap] = useState(null);
     const [locPosition , setLocPosition] = useState(null);
+    const [locPositionList , setLocPositionList] = useState(null);
     const [bankList, setBankList] = useState([]);
-
-    
-
-    // position 데이터
-    // [
-    //     {
-    //         content: '<div>카카오</div>', 
-    //         latlng: new kakao.maps.LatLng(33.450705, 126.570677)
-    //     },
-    //     {
-    //         content: '<div>생태연못</div>', 
-    //         latlng: new kakao.maps.LatLng(33.450936, 126.569477)
-    //     },
-    //     {
-    //         content: '<div>텃밭</div>', 
-    //         latlng: new kakao.maps.LatLng(33.450879, 126.569940)
-    //     },
-    //     {
-    //         content: '<div>근린공원</div>',
-    //         latlng: new kakao.maps.LatLng(33.451393, 126.570738)
-    //     }]
 
     useEffect(() => {
         const mapScript = document.createElement('script');
@@ -52,16 +32,28 @@ function Map() {
 
     useEffect(() => {
         if (locPosition && map){
-        displayMarker(locPosition, '<div style="padding:5px;">여기에 계신가요?!</div>');
+            displayMarker(locPosition, '<div style="text-align:center;padding:5px;">현위치</div>');
+            map.setCenter(locPosition);
         }
-    }, [locPosition, map])
+        else if (locPositionList && map){
+            console.log(locPositionList)
+            var bounds = new kakao.maps.LatLngBounds();
+            bounds.extend(locPositionList[0].coords);
+            locPositionList.map(loc => {
+                displayMarker(loc.coords, `<div style="text-align:center;padding:5px 0;">${loc.content}</div>`);
+                bounds.extend(loc.coords);
+            });
+            map.setBounds(bounds);
+        }
+    }, [locPosition, locPositionList, map])
 
     // 검색 결과 받기
     // 영업점 목록에 대해 마커 생성 + 인포 윈도우 표시
     const handleSearchLoc = () => {
+        setLocPosition(null);
         setBankList([
             {
-                content: '<div>국민은행 신관</div>', 
+                content: '국민은행 신관', 
                 address: '서울 영등포구 의사당대로 141'
             },
             {
@@ -93,34 +85,42 @@ function Map() {
 
         var geocoder = new kakao.maps.services.Geocoder();
         // https://apis.map.kakao.com/web/sample/keywordBasic/
-        // var bounds = new kakao.maps.LatLngBounds();
+
+        let temp = [];
+        let promises = [];
 
         bankList.forEach(branch => {
-            geocoder.addressSearch(branch.address, function(result, status) {
-                // 정상적으로 검색이 완료됐으면 
-                if (status === kakao.maps.services.Status.OK) {
-                    var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
-                    // bounds.extend(new kakao.maps.LatLng(result[0].y, result[0].x));
-
-                    // 결과값으로 받은 위치를 마커로 표시합니다
-                    var marker = new kakao.maps.Marker({
-                        map: map,
-                        position: coords
-                    });
-
-                    // 인포윈도우로 장소에 대한 설명을 표시합니다
-                    var infowindow = new kakao.maps.InfoWindow({
-                        content: `<div style="width:150px;text-align:center;padding:6px 0;">${branch.content}</div>`
-                    });
-                    infowindow.open(map, marker);
-                
-                } 
+            let promise = new Promise((resolve, reject) => {
+                geocoder.addressSearch(branch.address, function(result, status) {
+                    if (status === kakao.maps.services.Status.OK) {
+                        var coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+                        
+                        temp.push({
+                            coords: coords,
+                            content: branch.content
+                        });
+                        resolve();
+                    } else {
+                        reject(status);
+                    }
+                });
             });
+            promises.push(promise);
         });
-        // map.setBounds(bounds);
+
+        Promise.all(promises)
+            .then(() => {
+                setLocPositionList(temp);
+                console.log(locPositionList);
+            })
+            .catch(error => {
+                console.error('Error occurred while fetching coordinates:', error);
+            });
     }
 
     const handleCurrLoc = () => {
+        setLocPositionList(null);
+
         if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) { 
             const lat = position.coords.latitude;
@@ -150,7 +150,6 @@ function Map() {
         });
         
         infowindow.open(map, marker);
-        map.setCenter(locPosition);      
     }
 
     return (
