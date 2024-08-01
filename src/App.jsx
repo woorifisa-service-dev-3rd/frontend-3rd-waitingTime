@@ -39,7 +39,8 @@ function App() {
 
   return (
     <>
-    
+    <label htmlFor="search_bank">키워드를 검색해 보세요.</label>
+    <input id='search_bank' type="text" />
     <Map search_bank={search_bank}/>
     </>
   );
