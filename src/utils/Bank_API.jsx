@@ -7,13 +7,14 @@ export const call_waiting_api = async bankName => {
         let res;
         try {
             const response = await fetch(url);
-            console.log(response);
+
             if (!response.ok) { // HTTP 응답이 성공 상태가 아닐 때
                 console.error(`HTTP error! Status: ${response.status}`);
                 return;
             }
             
             const data = await response.json();
+
             if (data.tncd === '404') {
                 res = data.tncdCon;
             } else {
@@ -52,7 +53,7 @@ export const call_waiting_api = async bankName => {
 
 export const call_krbrm_api = async krbrm => {
 
-    const baseUrl = 'http://apis.data.go.kr/B190021/branchinfo/brcode';
+    const baseUrl = 'https://apis.data.go.kr/B190021/branchinfo/brcode';
     const serviceKey = import.meta.env.VITE_PUBLIC_DATA_SERVICE_KEY;
     const url = baseUrl + '?serviceKey=' + serviceKey + '&krnBrm=' + krbrm;
 
@@ -64,7 +65,7 @@ export const call_krbrm_api = async krbrm => {
 }
 
 export const call_brcd_api = async brcd => {
-    const baseUrl = 'http://apis.data.go.kr/B190021/branchinfo/details';
+    const baseUrl = 'https://apis.data.go.kr/B190021/branchinfo/details';
     const serviceKey = import.meta.env.VITE_PUBLIC_DATA_SERVICE_KEY;
     const url = `${baseUrl}?serviceKey=${serviceKey}&brcd=${brcd}`;
 
