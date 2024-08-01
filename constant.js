@@ -1,11 +1,7 @@
 export const api_data_sample = {
     0: {brncNwBscAdr: '서울특별시 노원구 덕릉로 688', brncNwDtlAdr: '중계동, 우리빌딩 2층', krnBrm: '상계역', brcd: '0003', tlwnList: Array(3)}, 
-1
-: 
-{brncNwBscAdr: '서울 성북구 종암로 108', brncNwDtlAdr: '(종암동)', krnBrm: '종암동', brcd: '0011', tlwnList: Array(3)},
-2
-: 
-{brncNwBscAdr: '서울 성북구 아리랑로 3', brncNwDtlAdr: '(동소문동6가)', krnBrm: '돈암동', brcd: '0012', tlwnList: Array(3)},
+1: {brncNwBscAdr: '서울 성북구 종암로 108', brncNwDtlAdr: '(종암동)', krnBrm: '종암동', brcd: '0011', tlwnList: Array(3)},
+2: {brncNwBscAdr: '서울 성북구 아리랑로 3', brncNwDtlAdr: '(동소문동6가)', krnBrm: '돈암동', brcd: '0012', tlwnList: Array(3)},
 3
 : 
 {brncNwBscAdr: '서울 중랑구 겸재로 154', brncNwDtlAdr: '(면목동)', krnBrm: '면목동', brcd: '0014', tlwnList: Array(3)},
@@ -296,6 +292,4 @@ export const api_data_sample = {
 {brncNwBscAdr: '부산 부산진구 신암로 141', brncNwDtlAdr: '(범천동, 부산기독교방송국건물)', krnBrm: '범천동', brcd: '0259', tlwnList: Array(3)},
 99
 : 
-{brncNwBscAdr: '인천 남동구 남동대로239번길 72-19', brncNwDtlAdr: '(논현동)', krnBrm: '남동산단', brcd: '0270', tlwnList: Array(2)}
-
-}
+{brncNwBscAdr: '인천 남동구 남동대로239번길 72-19', brncNwDtlAdr: '(논현동)', krnBrm: '남동산단', brcd: '0270', tlwnList: Array(2)}}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Map from './components/Map';
 import { call_waiting_api } from './utils/Bank_API';
 import { api_data_sample } from '../constant';
+import MapComponent from './components/MapComponent';
 
 function App() {
 
@@ -13,9 +14,13 @@ function App() {
     const fetchIBKbanklist = async () => {
         try {
           // api 대신 목업데이터로 개발
-            const IBKbanklist = Object.values(api_data_sample);
+            console.log(typeof api_data_sample)
+
+            const _IBKbanklist = Object.values(api_data_sample);
+            console.log(Array.isArray(_IBKbanklist));
+
             // const IBKbanklist = await call_waiting_api('IBK');
-            setAllBankList(IBKbanklist);
+            setAllBankList(_IBKbanklist);
             
         } catch (error) {
             console.error('Error fetching IBK bank list:', error);
@@ -28,8 +33,9 @@ function App() {
   useEffect(() => {
     if (allBankList !== null) {
         console.log('Updated allBankList:', allBankList);
+        console.log(typeof allBankList)
     }
-}, [allBankList]);
+  }, [allBankList]);
 
   // 키워드를 검색하면 -> call_waiting_api 전체 결과, 모든 텍스트에서 비교
   
@@ -38,9 +44,8 @@ function App() {
 
   return (
     <>
-    <label htmlFor="search_bank">키워드를 검색해 보세요.</label>
-    <input id='search_bank' type="text" />
-    <Map search_bank={search_bank}/>
+    {/* <MapComponent /> */}
+    <Map allBankList={allBankList} search_bank={search_bank}/>
     </>
   );
 }
