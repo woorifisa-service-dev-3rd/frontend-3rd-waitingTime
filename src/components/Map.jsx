@@ -49,12 +49,14 @@ function Map() {
 
     // 검색 결과 받기
     // 영업점 목록에 대해 마커 생성 + 인포 윈도우 표시
+
+
     const handleSearchLoc = () => {
         setLocPosition(null);
         setBankList([
             {
-                content: '국민은행 신관', 
-                address: '서울 영등포구 의사당대로 141'
+                content: '국민은행 신관', // 한글부점명
+                address: '서울 영등포구 의사당대로 141'// brncNwBscAdr
             },
             {
                 content: '산업은행 본점', 
@@ -66,25 +68,8 @@ function Map() {
             }]
         );
         
-        /*
-        // 서버로부터 데이터를 받아오는 함수입니다 (예: fetch를 사용)
-        async function fetchBranchData() {
-            // 여기에 서버 요청 코드를 작성하세요.
-            // 아래는 예시로, 실제 서버 API 엔드포인트를 사용하세요.
-            const response = await fetch('https://api.example.com/branches');
-            const data = await response.json();
-            return data;
-        }
-
-        // 데이터를 받아와서 지도에 마커를 표시하는 함수입니다
-        async function displayMarkers() {
-            const branches = await fetchBranchData();
-
-            branches.forEach(branch => {
-        */
-
+       
         var geocoder = new kakao.maps.services.Geocoder();
-        // https://apis.map.kakao.com/web/sample/keywordBasic/
 
         let temp = [];
         let promises = [];
