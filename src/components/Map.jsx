@@ -9,22 +9,20 @@ function Map() {
 
     useEffect(() => {
         const mapScript = document.createElement('script');
-
         mapScript.async = true;
         mapScript.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${import.meta.env.VITE_KAKAO_MAP_API_KEY}&autoload=false&libraries=services`;
-
         document.head.appendChild(mapScript);
 
         const onLoadKakaoMap = () => {
-        window.kakao.maps.load(() => {
-            const mapContainer = document.getElementById('map');
-            const mapOption = {
-            center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
-            level: 3, // 지도의 확대 레벨
-            };
-            const kakaoMap = new window.kakao.maps.Map(mapContainer, mapOption);
-            setMap(kakaoMap);
-        });
+            window.kakao.maps.load(() => {
+                const mapContainer = document.getElementById('map');
+                const mapOption = {
+                center: new window.kakao.maps.LatLng(33.450701, 126.570667), // 지도의 중심좌표
+                level: 3, // 지도의 확대 레벨
+                };
+                const kakaoMap = new window.kakao.maps.Map(mapContainer, mapOption);
+                setMap(kakaoMap);
+            });
         };
 
         mapScript.addEventListener('load', onLoadKakaoMap);
@@ -37,7 +35,6 @@ function Map() {
             map.setCenter(locPosition);
         }
         else if (locPositionList && map){
-            console.log(locPositionList)
             let bounds = new kakao.maps.LatLngBounds();
             bounds.extend(locPositionList[0].coords);
             locPositionList.map(loc => {
@@ -52,23 +49,22 @@ function Map() {
     // 영업점 목록에 대해 마커 생성 + 인포 윈도우 표시
 
     const handleSearchLoc = () => {
-    
         setLocPosition(null);
-        setBankList([
-            {
-                content: '국민은행 신관', // 한글부점명
-                address: '서울 영등포구 의사당대로 141'// brncNwBscAdr
-            },
-            {
-                content: '산업은행 본점', 
-                address: '서울 영등포구 은행로 14 한국산업은행'
-            },
-            {
-                content: '우리은행 여의도중앙지점', 
-                address: '서울 영등포구 여의나루로 71'
-            }]
-        );
-        
+        // setBankList([
+        //     {
+        //         content: '국민은행 신관', // 한글부점명
+        //         address: '서울 영등포구 의사당대로 141'// brncNwBscAdr
+        //     },
+        //     {
+        //         content: '산업은행 본점', 
+        //         address: '서울 영등포구 은행로 14 한국산업은행'
+        //     },
+        //     {
+        //         content: '우리은행 여의도중앙지점', 
+        //         address: '서울 영등포구 여의나루로 71'
+        //     }]
+        // );
+
         let geocoder = new kakao.maps.services.Geocoder();
 
         let temp = [];
@@ -145,13 +141,8 @@ function Map() {
     searchForm?.addEventListener("click", function (e) {
         e.preventDefault();
         
-
         let ps = new window.kakao.maps.services.Places();
-        const keyword = "상암";
-
         searchPlaces(ps);
-
-       
     });
 
     // 키워드 검색을 요청하는 함수입니다
@@ -164,11 +155,6 @@ function Map() {
             alert('키워드를 입력해주세요!');
             return false;
         }
-
-        // 장소 검색 객체를 생성합니다
-        // let ps = new kakao.maps.services.Places();  
-
-
         // 장소검색 객체를 통해 키워드로 장소검색을 요청합니다
 
         // 검색 옵션 객체
@@ -179,10 +165,17 @@ function Map() {
         // };
 
         ps.keywordSearch(keyword, placesSearchCB); 
+
+        fetchAllPages(ps, keyword, function(allData) {
+            console.log("All data:", allData);
+            const temp_allData = allData.map(data => [data.place_name, data.road_address_name])
+            setBankList(temp_allData);
+            //displayPlaces(allData);
+        });
     }
 
     // 장소검색이 완료됐을 때 호출되는 콜백함수 입니다
-    function placesSearchCB(data, status, pagination, ps) {
+    function placesSearchCB(data, status, pagination) {
         if (status === kakao.maps.services.Status.OK) {
             // place_name
             // content, address
@@ -195,12 +188,7 @@ function Map() {
             displayPlaces(data);
 
             // 페이지 번호를 표출합니다
-            displayPagination(pagination);
-
-            fetchAllPages(ps, keyword, function(allData) {
-                console.log("All data:", allData);
-                // Process allData here
-            });
+            // displayPagination(pagination);
 
         } else if (status === kakao.maps.services.Status.ZERO_RESULT) {
             alert('검색 결과가 존재하지 않습니다.');
@@ -389,14 +377,11 @@ function Map() {
         infowindow.open(map, marker);
     }
 
-    const onClickSearchBtn = () => {
-
-    }
-
-    async function fetchAllPages(ps, keyword, callback) {
+    // async
+    function fetchAllPages(ps, keyword, callback) {
         let allData = [];
         
-        function searchPlaces2(page = 1) {
+        function searchPage(page = 1) {
           ps.keywordSearch(keyword, function(data, status, pagination) {
             if (status === window.kakao.maps.services.Status.OK) {
               allData = allData.concat(data);
@@ -415,8 +400,12 @@ function Map() {
           }, {page: page});
         }
       
-        searchPlaces2();
+        searchPage();
+
+        
       }
+
+    useEffect(()=>console.log("bankList", bankList), [bankList])
 
     const [search, setSearch] = useState("");
 

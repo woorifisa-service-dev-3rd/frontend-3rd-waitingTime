@@ -39,7 +39,7 @@ function App() {
 
   return (
     <>
-    
+    {/* <MapComponent /> */}
     <Map search_bank={search_bank}/>
     </>
   );
