@@ -123,6 +123,25 @@ function Map({search_bank}) {
     
         fetchNearbyPlaces('기업은행', lat, lon);
     };
+
+    // 현위치 주소정보 받아오는 함수
+    const nowAddress = (result, status) => {
+        if (status === kakao.maps.services.Status.OK) {
+            
+            console.log(result[0].region_2depth_name);
+            const res = search_bank.filter((data) => {
+                if(data.brncNwBscAdr.includes(result[0].region_2depth_name) || data.brncNwDtlAdr.includes(result[0].region_2depth_name) || data.krnBrm.includes(result[0].region_2depth_name)) {
+                    return data
+                }});
+            console.log(res);
+        }    
+    }
+    
+    // 좌표로 행정동 주소 정보를 요청합니다
+    const searchAddrFromCoords = (coords, callback) => {
+        let geocoder = new kakao.maps.services.Geocoder();
+        geocoder.coord2RegionCode(coords.getLng(), coords.getLat(), callback);
+    }
     
 
 
@@ -164,6 +183,7 @@ function Map({search_bank}) {
                 const lon = position.coords.longitude;
                 const currentLoc = new window.kakao.maps.LatLng(lat, lon);
                 setLocPosition(currentLoc);
+                searchAddrFromCoords(currentLoc, nowAddress);
             }, () => {
                 const defaultLoc = new window.kakao.maps.LatLng(33.450701, 126.570667);
                 setLocPosition(defaultLoc);
