@@ -4,6 +4,7 @@ import { api_data_sample } from "../../constant";
 import { CiSearch } from "react-icons/ci";
 import { MainContext } from "../contexts/PageContexts";
 import Map from "./Map";
+import Card from "./Card";
 
 const MainPage = () => {
   const { clickedButtonName, setClickedButtonName } = useContext(MainContext);
@@ -11,9 +12,13 @@ const MainPage = () => {
   const [checkbox, setCheckbox] = useState(true);
   const [select, setSelect] = useState("distance");
   const [allBankList, setAllBankList] = useState(null);
+  const [searchResult, setSearchResult] = useState([]);
 
   const search_bank = document.getElementById("search_bank");
 
+  useEffect(() => {
+    console.log(searchResult);
+  }, [searchResult]);
   useEffect(() => {
     const fetchIBKbanklist = async () => {
       try {
@@ -81,7 +86,6 @@ const MainPage = () => {
             <option value="하나은행">하나은행</option>
           </select>
         </div>
-
         {/* <div className="mb-4 p-3 bg-blue-100 text-blue-700 rounded-lg shadow-md text-center font-semibold">
                     {clickedButtonName ? ` ${clickedButtonName}` : '은행을 선택해주세요'}
                 </div> */}
@@ -120,7 +124,6 @@ const MainPage = () => {
             </button>
           </form>
         </div>
-
         {/* 지도 이미지 들어갈 예정 */}
         <div className="flex justify-center items-center mb-10">
           {/* <img
@@ -131,12 +134,10 @@ const MainPage = () => {
           <Map
             className="h-56 w-56"
             allBankList={allBankList}
-            search_bank={search_bank}
+            setSearchResult={setSearchResult}
           />
         </div>
-
         {/* 지도 들어갈 예정 */}
-
         <div className="flex justify-between items-center border-b-4 border-black mb-4">
           <div className="m-6 flex items-center">
             <input
@@ -164,35 +165,10 @@ const MainPage = () => {
             </select>
           </div>
         </div>
-        <div className="text-gray-700 text-center mb-10">내용 있어유</div>
-        <div className="flex justify-center items-center">
-          <img
-            src="/src/assets/Samsungwallpaper.jpg"
-            alt=""
-            className="h-56 w-56 object-cover rounded-lg shadow-md"
-          />
-        </div>
-        <div className="flex justify-center items-center">
-          <img
-            src="/src/assets/Samsungwallpaper.jpg"
-            alt=""
-            className="h-56 w-56 object-cover rounded-lg shadow-md"
-          />
-        </div>
-        <div className="flex justify-center items-center">
-          <img
-            src="/src/assets/Samsungwallpaper.jpg"
-            alt=""
-            className="h-56 w-56 object-cover rounded-lg shadow-md"
-          />
-        </div>
-        <div className="flex justify-center items-center">
-          <img
-            src="/src/assets/Samsungwallpaper.jpg"
-            alt=""
-            className="h-56 w-56 object-cover rounded-lg shadow-md"
-          />
-        </div>
+
+        {searchResult?.map((bank, index) => (
+          <Card key={index} bank={bank} />
+        ))}
       </div>
     </>
   );
