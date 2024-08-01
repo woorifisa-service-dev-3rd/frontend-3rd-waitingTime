@@ -36,6 +36,7 @@ export const call_waiting_api = async bankName => {
                 const all = {
                     brncNwBscAdr: call_data.brncNwBscAdr,
                     brncNwDtlAdr: call_data.brncNwDtlAdr,
+                    krnBrm: call_data.krnBrm,
                     brcd: data.brcd,
                     tlwnList: data.tlwnList,
                 };
@@ -44,7 +45,7 @@ export const call_waiting_api = async bankName => {
                 console.error(`Failed to fetch branch data for brcd ${data.brcd}:`, error);
             }
         }
-
+        console.log(final_res);
         return final_res;
     }
 };
