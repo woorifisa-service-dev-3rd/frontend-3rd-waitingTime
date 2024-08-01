@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import Map from './components/Map';
 import { call_waiting_api } from './utils/Bank_API';
 import { api_data_sample } from '../constant';
+import MapComponent from './components/MapComponent';
 
 function App() {
 
@@ -38,8 +39,7 @@ function App() {
 
   return (
     <>
-    <label htmlFor="search_bank">키워드를 검색해 보세요.</label>
-    <input id='search_bank' type="text" />
+    
     <Map search_bank={search_bank}/>
     </>
   );
