@@ -1,20 +1,22 @@
 import { useEffect, useState } from 'react';
 import Map from './components/Map';
 import { call_waiting_api } from './utils/Bank_API';
+import { api_data_sample } from '../constant';
 
 function App() {
 
   const [allBankList, setAllBankList] = useState(null);
   
   const search_bank = document.getElementById('search_bank');
-  console.log(search_bank.value);
 
   useEffect(() => {
     const fetchIBKbanklist = async () => {
         try {
+          // api 대신 목업데이터로 개발
+            const IBKbanklist = Object.values(api_data_sample);
             // const IBKbanklist = await call_waiting_api('IBK');
             setAllBankList(IBKbanklist);
-            // api 대신 목업데이터로 개발하기!!
+            
         } catch (error) {
             console.error('Error fetching IBK bank list:', error);
         }
