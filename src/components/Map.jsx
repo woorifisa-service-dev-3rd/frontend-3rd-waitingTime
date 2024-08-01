@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-function Map() {
+function Map(allBankList, search_bank) {
     const [map, setMap] = useState(null);
     const [locPosition , setLocPosition] = useState(null);
     const [locPositionList , setLocPositionList] = useState(null);
@@ -145,6 +145,7 @@ function Map() {
         searchPlaces(ps);
     });
 
+
     // 키워드 검색을 요청하는 함수입니다
     function searchPlaces(ps) {
 
@@ -168,8 +169,13 @@ function Map() {
 
         fetchAllPages(ps, keyword, function(allData) {
             console.log("All data:", allData);
-            const temp_allData = allData.map(data => [data.place_name, data.road_address_name])
-            setBankList(temp_allData);
+            const address_allData = allData.map(data => data.road_address_name)
+            // console.log(address_allData);
+            // setBankList(temp_allData);
+            const filteredBankList = allBankList.filter(bank => 
+                address_allData.includes(bank.brncNwBscAdr)
+            );
+            setBankList(filteredBankList);
             //displayPlaces(allData);
         });
     }
@@ -181,7 +187,7 @@ function Map() {
             // content, address
 
             // setBankList(data)
-            console.log(data, pagination);
+            // console.log(data, pagination);
 
             // 정상적으로 검색이 완료됐으면
             // 검색 목록과 마커를 표출합니다
