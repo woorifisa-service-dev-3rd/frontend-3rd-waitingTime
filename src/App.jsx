@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import 
 import Map from './components/Map';
 import { call_waiting_api } from './utils/Bank_API';
 
