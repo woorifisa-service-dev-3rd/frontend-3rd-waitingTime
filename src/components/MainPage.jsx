@@ -17,8 +17,9 @@ const MainPage = () => {
   const search_bank = document.getElementById("search_bank");
 
   useEffect(() => {
-    console.log(searchResult);
+    console.log("searchResult", searchResult);
   }, [searchResult]);
+
   useEffect(() => {
     const fetchIBKbanklist = async () => {
       try {
@@ -27,7 +28,6 @@ const MainPage = () => {
 
         const _IBKbanklist = Object.values(api_data_sample);
         console.log(Array.isArray(_IBKbanklist));
-
         // const IBKbanklist = await call_waiting_api('IBK');
         setAllBankList(_IBKbanklist);
       } catch (error) {
@@ -92,7 +92,7 @@ const MainPage = () => {
         <div className="mt-10 mb-10 border-b-4 border-black">
           <div></div>
         </div>
-        <div>
+        {/* <div>
           <form
             onSubmit={onSubmitHandler}
             className="flex justify-center mb-10"
@@ -123,21 +123,16 @@ const MainPage = () => {
               <CiSearch className="w-6 h-6" />
             </button>
           </form>
-        </div>
-        {/* 지도 이미지 들어갈 예정 */}
-        <div className="flex justify-center items-center mb-10">
-          {/* <img
-            src="/src/assets/Samsungwallpaper.jpg"
-            alt=""
-            className="h-56 w-56 object-cover rounded-lg shadow-md"
-          /> */}
+        </div> */}
+
+        <div className="flex justify-center items-center">
           <Map
             className="h-56 w-56"
             allBankList={allBankList}
             setSearchResult={setSearchResult}
           />
         </div>
-        {/* 지도 들어갈 예정 */}
+
         <div className="flex justify-between items-center border-b-4 border-black mb-4">
           <div className="m-6 flex items-center">
             <input
