@@ -3,15 +3,26 @@ import MainPage from "./components/MainPage";
 import { useMediaQuery } from "react-responsive";
 import SidePage from "./components/SidePage";
 import { useState, useEffect } from "react";
-import { MainContext } from "./contexts/PageContexts";
+import { MainContext, MainDispatchContext } from "./contexts/PageContexts";
 
 function App() {
   const isLargeScreen = useMediaQuery({ query: "(min-width: 700px)" });
   const [clickedButtonName, setClickedButtonName] = useState("기업은행");
+  const [searchList, setSearchList] = useState([]);
+  const [bankWaitingList, setBankWaitingList] = useState([]);
 
   return (
     <>
-      <MainContext.Provider value={{ clickedButtonName, setClickedButtonName }}>
+      <MainContext.Provider
+        value={{
+          searchList,
+          setSearchList,
+          bankWaitingList,
+          setBankWaitingList,
+          clickedButtonName,
+          setClickedButtonName,
+        }}
+      >
         <div
           className={`${
             isLargeScreen

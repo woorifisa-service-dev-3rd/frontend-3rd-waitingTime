@@ -12,22 +12,29 @@ const MainPage = () => {
   const [checkbox, setCheckbox] = useState(true);
   const [select, setSelect] = useState("distance");
   const [allBankList, setAllBankList] = useState(null);
-  const [searchResult, setSearchResult] = useState([]);
+  // const [searchResult, setSearchResult] = useState([]);
+
+  const { searchList, setSearchList, bankWaitingList, setBankWaitingList } =
+    useContext(MainContext);
+
+  const minLength = Math.min(bankWaitingList.length, searchList.length);
+
+  // 카카오 지도 검색 결과와 기업은행 영업점 정보 조회 결과를 통합한 배열
+  const combinedList = [];
+  for (let i = 0; i < minLength; i++) {
+    combinedList.push({
+      ...bankWaitingList[i],
+      ...searchList[i],
+    });
+  }
 
   const search_bank = document.getElementById("search_bank");
-
-  useEffect(() => {
-    console.log("searchResult", searchResult);
-  }, [searchResult]);
 
   useEffect(() => {
     const fetchIBKbanklist = async () => {
       try {
         // api 대신 목업데이터로 개발
-        console.log(typeof api_data_sample);
-
         const _IBKbanklist = Object.values(api_data_sample);
-        console.log(Array.isArray(_IBKbanklist));
         // const IBKbanklist = await call_waiting_api('IBK');
         setAllBankList(_IBKbanklist);
       } catch (error) {
@@ -44,10 +51,6 @@ const MainPage = () => {
       console.log(typeof allBankList);
     }
   }, [allBankList]);
-
-  // 키워드를 검색하면 -> call_waiting_api 전체 결과, 모든 텍스트에서 비교
-
-  // 주소 + 한글부점명 + 대기인원 데이터 뽑아서 화면에 출력
 
   const selectHandler = (event) => {
     setSelect(event.target.value);
@@ -92,47 +95,11 @@ const MainPage = () => {
         <div className="mt-10 mb-10 border-b-4 border-black">
           <div></div>
         </div>
-        {/* <div>
-          <form
-            onSubmit={onSubmitHandler}
-            className="flex justify-center mb-10"
-          >
-            <div className="ml-10">
-              <label
-                htmlFor="placeInput"
-                className="block text-gray-700 text-sm font-medium"
-              ></label>
-              <input
-                id="placeInput"
-                type="text"
-                placeholder="지점명을 입력하세요"
-                name="input1"
-                className="w-60 px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-              />
-              <div
-                className="border-2 w-60 bg-slate-200 text-center mt-2 py-1 rounded-lg cursor-pointer"
-                onClick={clickHandler}
-              >
-                내 위치로 찾기
-              </div>
-            </div>
-            <button
-              type="submit"
-              className="ml-4 flex items-center justify-center text-gray-500 hover:text-blue-500"
-            >
-              <CiSearch className="w-6 h-6" />
-            </button>
-          </form>
-        </div> */}
 
         <div className="flex justify-center items-center">
-          <Map
-            className="h-56 w-56"
-            allBankList={allBankList}
-            setSearchResult={setSearchResult}
-          />
+          <Map allBankList={allBankList} />
         </div>
-
+        {/* setSearchResult={setSearchResult} */}
         <div className="flex justify-between items-center border-b-4 border-black mb-4">
           <div className="m-6 flex items-center">
             <input
@@ -161,9 +128,11 @@ const MainPage = () => {
           </div>
         </div>
 
-        {searchResult?.map((bank, index) => (
-          <Card key={index} bank={bank} />
-        ))}
+        <div className="w-full flex-col justify-center items-center overflow-y-auto h-160">
+          {combinedList?.map((bank, index) => (
+            <Card key={index} bank={bank} />
+          ))}
+        </div>
       </div>
     </>
   );

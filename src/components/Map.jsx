@@ -1,15 +1,18 @@
 import { useContext, useEffect, useState } from "react";
 import { CiSearch } from "react-icons/ci";
 
-// import { MapExContext } from "/src/contexts/PageContexts";
+import { MainContext } from "/src/contexts/PageContexts";
 
-function Map({ allBankList, setSearchResult }) {
+function Map({ allBankList }) {
   const [map, setMap] = useState(null);
   const [locPosition, setLocPosition] = useState(null);
   const [locPositionList, setLocPositionList] = useState(null);
   const [bankList, setBankList] = useState([]);
   const [markers, setMarkers] = useState([]);
   const [infoWindows, setInfoWindows] = useState([]);
+
+  const { searchList, setSearchList, bankWaitingList, setBankWaitingList } =
+    useContext(MainContext);
 
   useEffect(() => {
     const mapScript = document.createElement("script");
@@ -36,26 +39,15 @@ function Map({ allBankList, setSearchResult }) {
   }, []);
 
   useEffect(() => {
-    console.log(
-      "locPosition,locPositionList",
-      locPosition,
-      locPositionList,
-      map
-    );
     if (locPosition && map) {
-      displayMarker(
-        locPosition,
-        '<div style="text-align:center;padding:5px;">현위치</div>'
-      );
+      displayMarker(locPosition, "현위치");
       // map.setCenter(locPosition);
       // searchNearbyPlaces(locPosition);
     } else if (locPositionList && map) {
       let bounds = new window.kakao.maps.LatLngBounds();
       locPositionList.forEach((loc) => {
-        displayMarker(
-          loc.coords,
-          `<div style="text-align:center;padding:5px 0;">${loc.content}</div>`
-        );
+        console.log(loc.content);
+        displayMarker(loc.coords, `${loc.content}`);
         bounds.extend(loc.coords);
       });
       map.setBounds(bounds);
@@ -63,40 +55,31 @@ function Map({ allBankList, setSearchResult }) {
   }, [locPosition, locPositionList, map]);
 
   useEffect(() => {
-    console.log("bankList", bankList);
+    const minLength = Math.min(bankWaitingList.length, searchList.length);
 
-    if (bankList.length > 0) {
-      const geocoder = new window.kakao.maps.services.Geocoder();
-      const temp = [];
-      const promises = [];
-      bankList.forEach((branch) => {
-        const promise = new Promise((resolve, reject) => {
-          geocoder.addressSearch(branch.road_address_name, (result, status) => {
-            if (status === window.kakao.maps.services.Status.OK) {
-              const coords = new window.kakao.maps.LatLng(
-                result[0].y,
-                result[0].x
-              );
-              temp.push({ coords: coords, content: branch.place_name });
-
-              resolve();
-            } else {
-              reject(status);
-            }
-          });
-        });
-        promises.push(promise);
+    // 카카오 지도 검색 결과와 기업은행 영업점 정보 조회 결과를 통합한 배열
+    const combinedList = [];
+    for (let i = 0; i < minLength; i++) {
+      combinedList.push({
+        ...bankWaitingList[i],
+        ...searchList[i],
       });
-      Promise.all(promises)
-        .then(() => {
-          console.log("setLocPositionList");
-          setLocPositionList(temp);
-        })
-        .catch((error) =>
-          console.error("Error occurred while fetching coordinates:", error)
-        );
     }
-  }, [bankList]);
+
+    if (combinedList.length > 0) {
+      const temp = [];
+      combinedList.forEach((branch) => {
+        const coords = new window.kakao.maps.LatLng(branch.y, branch.x);
+        const waitingListInfo = branch.tlwnList.join(", ");
+        const content = `<div>
+          <div style="font-weight:bold;">${branch.place_name}</div>
+          <div>대기인원: ${waitingListInfo}</div>
+        </div>`;
+        temp.push({ coords: coords, content: content });
+      });
+      setLocPositionList(temp);
+    }
+  }, [searchList]);
 
   async function displayMarker(locPosition, message) {
     let marker = new window.kakao.maps.Marker({
@@ -105,7 +88,7 @@ function Map({ allBankList, setSearchResult }) {
     });
 
     let infowindow = new window.kakao.maps.InfoWindow({
-      content: message,
+      content: `<div style="width:200px;height:auto;text-align:center;padding:5px;">${message}</div>`,
       removable: true,
     });
     infowindow.open(map, marker);
@@ -265,12 +248,13 @@ function Map({ allBankList, setSearchResult }) {
     const keyword = inputText + "기업은행"; // Concatenate search keyword
 
     fetchAllPages(ps, keyword, (allData) => {
-      // allData = 카카오 지도 검색 결과
+      // allData = 카카오 지도 검색 결과 데이터
+      // allBankList = 기업은행 데이터
       const kakao_result = [];
       const IBK_waiting_result = [];
+
       allData.map((data) => {
         allBankList.map((bank) => {
-          // allBankList = 은행 api 데이터, 2개 데이터 대조
           if (bank.brncNwBscAdr === data.road_address_name) {
             if (
               data.category_name.substring(
@@ -278,15 +262,13 @@ function Map({ allBankList, setSearchResult }) {
                 data.category_name.length
               ) === "기업은행"
             ) {
-              console.log("은행 api 데이터 bank,", bank);
-              console.log("kakao 데이터 bank", data);
               kakao_result.push(data);
             }
           }
         });
       });
+      setSearchList(kakao_result);
 
-      setBankList(kakao_result);
       kakao_result.map((bnk1) => {
         allBankList.map((bnk2) => {
           if (bnk1.road_address_name === bnk2.brncNwBscAdr) {
@@ -294,42 +276,8 @@ function Map({ allBankList, setSearchResult }) {
           }
         });
       });
-      setSearchResult(IBK_waiting_result);
+      setBankWaitingList(IBK_waiting_result);
     });
-
-    let geocoder = new window.kakao.maps.services.Geocoder();
-    let temp = [];
-    let promises = [];
-
-    bankList?.forEach((branch) => {
-      let promise = new Promise((resolve, reject) => {
-        geocoder.addressSearch(
-          branch.road_address_name,
-          function (result, status) {
-            if (status === window.kakao.maps.services.Status.OK) {
-              let coords = new window.kakao.maps.LatLng(
-                result[0].y,
-                result[0].x
-              );
-              temp.push({ coords: coords, content: branch.place_name });
-
-              resolve();
-            } else {
-              reject(status);
-            }
-          }
-        );
-      });
-      promises.push(promise);
-    });
-    Promise.all(promises)
-      .then(() => {
-        console.log("setLocPositionList");
-        setLocPositionList(temp);
-      })
-      .catch((error) =>
-        console.error("Error occurred while fetching coordinates:", error)
-      );
   };
 
   return (
@@ -360,7 +308,7 @@ function Map({ allBankList, setSearchResult }) {
           </div>
         </form>
         <div
-          className="border-2 w-60 bg-slate-200 text-center mt-2 py-1 rounded-lg cursor-pointer"
+          className="border-2 bg-slate-200 text-center mt-2 py-1 rounded-lg cursor-pointer"
           onClick={handleCurrLoc}
         >
           내 위치로 찾기
