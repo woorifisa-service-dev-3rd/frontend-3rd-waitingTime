@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
-import { api_data_sample } from "../../constant";
+// import { api_data_sample } from "../../constant";
+import {call_waiting_api} from '../utils/Bank_API';
 
 import { CiSearch } from "react-icons/ci";
 import { MainContext } from "../contexts/PageContexts";
@@ -34,9 +35,10 @@ const MainPage = () => {
     const fetchIBKbanklist = async () => {
       try {
         // api 대신 목업데이터로 개발
-        const _IBKbanklist = Object.values(api_data_sample);
-        // const IBKbanklist = await call_waiting_api('IBK');
-        setAllBankList(_IBKbanklist);
+        // const _IBKbanklist = Object.values(api_data_sample);
+        const IBKbanklist = await call_waiting_api('IBK');
+        // setAllBankList(_IBKbanklist);
+        setAllBankList(IBKbanklist);
       } catch (error) {
         console.error("Error fetching IBK bank list:", error);
       }

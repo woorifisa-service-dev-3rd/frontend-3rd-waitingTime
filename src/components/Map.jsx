@@ -41,7 +41,7 @@ function Map({ allBankList }) {
   useEffect(() => {
     if (locPosition && map) {
       displayMarker(locPosition, "현위치");
-      // map.setCenter(locPosition);
+      map.setCenter(locPosition);
       // searchNearbyPlaces(locPosition);
     } else if (locPositionList && map) {
       let bounds = new window.kakao.maps.LatLngBounds();
@@ -69,11 +69,12 @@ function Map({ allBankList }) {
     if (combinedList.length > 0) {
       const temp = [];
       combinedList.forEach((branch) => {
+        const wait_cus = branch.tlwnList[0].waitCusCnt;
         const coords = new window.kakao.maps.LatLng(branch.y, branch.x);
-        const waitingListInfo = branch.tlwnList.join(", ");
+        // const waitingListInfo = branch.tlwnList.join(", ");
         const content = `<div>
           <div style="font-weight:bold;">${branch.place_name}</div>
-          <div>대기인원: ${waitingListInfo}</div>
+          <div>대기인원: ${wait_cus}</div>
         </div>`;
         temp.push({ coords: coords, content: content });
       });

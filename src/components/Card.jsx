@@ -17,7 +17,7 @@ const Card = ({ bank }) => {
         {isArrayEmpty(bank.tlwnList) ? (
           <p className="text-blue-500">영업시간이 아닙니다.</p>
         ) : (
-          <p className="text-blue-500">{`대기인원: ${bank.tlwnList}`}</p>
+          <p className="text-blue-500">{`대기인원: ${bank.tlwnList[0].waitCusCnt}`}</p>
         )}
         <a
           href={bank.place_url}
