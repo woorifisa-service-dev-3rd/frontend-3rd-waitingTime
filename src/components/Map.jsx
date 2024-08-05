@@ -232,6 +232,7 @@ function Map({search_bank}) {
         const inputText =event.target.formText.value;
         const ps = new window.kakao.maps.services.Places();  // Ensure `ps` is properly created
         const keyword = inputText + '기업은행';  // Concatenate search keyword
+        
         fetchAllPages(ps, keyword, allData => {
 
             const temp=[];
@@ -268,7 +269,6 @@ function Map({search_bank}) {
                 </form>
             </div>
             <div id="map" className="w-[100%] h-80"></div>
-            <button id='search_loc' onClick={handleSearchLoc}>검색</button>
             <button id='current_loc' onClick={handleCurrLoc}>현위치</button>
             <ul id="placesList"></ul>
         </div>
